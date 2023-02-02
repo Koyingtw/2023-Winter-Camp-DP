@@ -1,5 +1,5 @@
 #define MAXN 2000005
-#define lowbit (x & (-x))
+#define lowbit(x) (x & (-x))
 
 struct Fenwick_Tree {
     int arr[MAXN];
