@@ -840,6 +840,92 @@
         \end{block}
     \end{frame}
 
+    \begin{frame}{BIT}
+        \begin{itemize}
+            \item Binary Indexed tree，又稱 Fenwick Tree
+            \item 可以說是簡化版的 Segment Tree
+        \end{itemize}
+    \end{frame}
+
+    \begin{frame}{BIT}
+        \begin{itemize}
+            \item 首先，我們要知道什麼是 lowbit
+            \item lowbit 指的是數字在二進位下，最右邊的 $1$ 代表的數字
+            \item 例如 $5 = 101_{(2)}, lowbit(5) = 1$、$6 = 110_{(2)}, lowbit(6) = 2$
+            \item 在程式上可以用 $\text{x \& (-x)}$ 算出
+            \item 因為 $-x$ 就是 $x$ 的補數 +1
+            \item $
+            (56)_{10} = (111000)_2,
+            (-56)_{10} = (001000)_2$
+        \end{itemize}
+        
+    \end{frame}
+
+    \begin{frame}{BIT}
+        \begin{itemize}
+            \item 接著來看 BIT 的定義
+            \item BIT[i] 代表的是 $[i, i + lowbit(i) - 1]$ 的區間
+        \end{itemize}
+
+        \includegraphics[width=0.6\textwidth]{img/BIT.png}
+    \end{frame}
+
+    \begin{frame}{update}
+        \begin{itemize}
+            \item 如果我們要更改 $A_i$ 的值，那就需要更改所有包含 $i$ 的陣列
+            \item 觀察之後會發現，從 $i$ 開始，每次更改後將 $i$ 加上 $lowbit(i)$
+            \item 經過的點就是包含 $i$ 的所有區間
+        \end{itemize}
+    \end{frame}
+
+    \begin{frame}{query}
+        \begin{itemize}
+            \item 至於查詢 $1 \sim i$ 的和，則是要避免有重疊的線段
+            \item 觀察後，會發現其實就是不斷 $- lowbit(i)$
+            \item OK！我們會 BIT 了
+        \end{itemize}
+    \end{frame}
+
+    \begin{frame}{先來個簡單的}
+        \begin{block}{\href{https://cses.fi/problemset/task/1648}{CSES Dynamic Range Sum Queries}}
+            請寫出一支程式，支援以下操作：\\
+            \begin{itemize}
+                \item update(i, x)：將 $A_i$ 加上 $x$
+                \item query(l, r)：查詢 $A_l, A_{l+1}, \cdots, A_r$ 的總和
+            \end{itemize}
+        \end{block}
+    \end{frame}
+
+    \begin{frame}{BIT 應用在 LIS 上}
+        \begin{itemize}
+            \item<1-> BIT 也可以拿來計算最大值
+            \item<2-> 我們將 BIT 的區間定義成以該區間內的數字為結尾的 LIS 長度
+            \item<3-> 也就是 query(i) 會回傳以 $1 \sim i$ 為結尾的最大 LIS 長度
+            \item<4-> 假設這是 tmp，那我們在 tmp 之後就能再接上 $i$，使得 LIS 長度加一
+            \item<5-> 如此一來，我們就可以使用 BIT 來計算 LIS 了！
+        \end{itemize}
+    \end{frame}
+
+    \begin{frame}{最終步驟}
+        \begin{enumerate}
+            \item 對於每個數字 $a_i$，查詢 tmp = query($a_i$ - 1)
+            \item update($a_i$, tmp + 1)
+            \item 最後 query(夠大的數字) 就是答案！
+        \end{enumerate}
+    \end{frame}
+
+    \begin{frame}{逆序數對}
+        \begin{block}{\href{https://tioj.ck.tp.edu.tw/problems/1080}{TIOJ 1080 A.逆序數對}}
+            計算符合以下條件的數對數量：$i < j, a_i > a_j$
+        \end{block}
+
+        \begin{itemize}
+            \item<1-> 這題其實是分治的題目
+            \item<2-> 但我們可以很開心的用 BIT 解決
+            \item<3-> 將 query 設定為數字 $1 \sim i$ 出現的次數
+            \item<4-> 對於某個數字 $a_j$，$a_i > a_j$ 的數量就是 n - query($a_j$)
+        \end{itemize}
+    \end{frame}
 
     \section{DAG DP}
 
@@ -1006,7 +1092,21 @@
 
         \begin{itemize}
             \item<1-> 至於轉移式怎麼訂呢？
-            \item<2-> 假設有某個子節點 $v, s_{v}$
+            \item<2-> 對於轉移點 $v$，我們枚舉 $k, l = 0 \sim 4$，如果 $k \neq l$ 就代表要 $+1$
+            \item<3-> 最終轉移式：$dp_{i, j, k} =
+                \sum\min_{l = 0}^{4}(dp_{v, j, l} + (k \neq l))$
+        \end{itemize}
+    \end{frame}
+
+    \begin{frame}{例題}
+        \begin{block}{APCS 202007 P4. 病毒演化}
+            有 $n$ 種病毒，每個病毒由一個長度為 $m$ 的 RNA 序列組成，包含 A、U、C、G、@（@ 代表不確定）\\
+            除了原始病毒外，所有病毒都是由某個病毒演化而來的，
+            求將 $@$ 填入某個字元後，每個病毒與它演化來源的病毒的距離總合最小值是多少？（距離指的是不一樣的位置數）
+        \end{block}
+        \begin{itemize}
+            \item \href{https://cses.fi/problemset/task/1130}{CSES Tree Matching}
+            \item \href{https://codeforces.com/problemset/problem/1528/A}{CF 1528A. Parsa's Humongous Tree}
         \end{itemize}
     \end{frame}
 
